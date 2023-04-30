@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Properties>
+		<Property name="LOG_FILE_PATH">/logs/myapp.log</Property>
+		<Property name="CONSOLE_LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} - %-5level
+			- %logger{36} - %msg%n</Property>
+		<Property name="JSON_LOG_PATTERN">{
+			&quot;logmsg&quot;:%msg
+			&quot;exception&quot;:%ex
+			&quot;userId&quot;:%X{userId}&quot;
+			&quot;processTime&quot;:%X{processTime}&quot;
+			}%n</Property>
+	</Properties>
+	<Appenders>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="${CONSOLE_LOG_PATTERN}" />
+		</Console>
+		<RollingFile name="RollingFile" fileName="${LOG_FILE_PATH}"
+			filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>${JSON_LOG_PATTERN}</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="1 GB" />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<SpringProfile name="dev">
+		<Loggers>
+			<Logger name="com.log4j2.demo" level="debug" additivity="false">
+				<AppenderRef ref="RollingFile" />
+				<AppenderRef ref="STDOUT" />
+
+			</Logger>
+			<Root level="info">
+				<AppenderRef ref="STDOUT" />
+				<AppenderRef ref="RollingFile" />
+			</Root>
+		</Loggers>
+	</SpringProfile>
+	<SpringProfile name="prod">
+		<Loggers>
+			<Logger name="com.log4j2.demo" level="info" additivity="false">
+				<AppenderRef ref="RollingFile" />
+				<AppenderRef ref="STDOUT" />
+			</Logger>
+			<Root level="info">
+				<AppenderRef ref="STDOUT" />
+				<AppenderRef ref="RollingFile" />
+			</Root>
+		</Loggers>
+	</SpringProfile>
+</Configuration>
